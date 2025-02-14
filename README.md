@@ -1,4 +1,4 @@
 # AutoGen HelloWorld
-First experiments with [Microsoft AutoGen](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html)
+First experiments with [Microsoft AutoGen](https://github.com/microsoft/AutoGen)
 
 `python main.py`

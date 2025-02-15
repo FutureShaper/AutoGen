@@ -142,7 +142,7 @@ rag_agent = AssistantAgent(
     tools=[rag_tool],
     model_client=model_client,
     description="An agent that uses RAG to retrieve and generate information based on a given query",
-    system_message="Create an answer to the query from the text provided from the vector store. Then immediately create your response and append to your response the word 'TERMINATE'",
+    system_message="Create an answer to the query from the text provided from the vector store, only. Ignore any additional information. Finally, append to your response the word 'TERMINATE'",
     #system_message="For testing purposes please ALWAYS only answer with the word 'TERMINATE'"
 )
 

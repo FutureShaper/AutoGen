@@ -40,14 +40,14 @@ class OllamaLLM(LLM, BaseModel):
 texts = [
     "Simon says Pizza is the best.",
     "Pasta is best served with Pesto.",
-    "Parmesan is a great source of Protein.",
+    "From all italian foods, Parmesan is the best source of Protein.",
 ]
 
 # Step 3: Create embeddings for your data using the Ollama model
 def get_embeddings(texts):
     embeddings = []
     for text in texts:
-        response = ollama.embed(model='nomic-embed-text', input=text)
+        response = ollama.embed(model=llm_model_name, input=text)  # Use the Mistral model
         #print(response)  # Print the response to inspect its structure
         if 'embeddings' in response:
             embeddings.append(response['embeddings'][0])  # Adjusted to extract from 'embeddings'
@@ -105,6 +105,17 @@ def create_rag_tool():
     # Wrap the custom chain in a LangChainToolAdapter
     rag_tool = LangChainToolAdapter(custom_rag_chain)
 
+    # Debug: Print the embeddings and the retrieval results
+    print("Embeddings:", vector_store.index.reconstruct_n(0, len(texts)))
+    query_embedding = get_embeddings(["Which italian food is a great source of protein?"])[0]
+    D, I = vector_store.index.search(np.array([query_embedding]), k=3)
+    print("Distances:", D)
+    print("Indices:", I)
+    for idx in I[0]:
+        document = vector_store.docstore.search(idx)
+        if document:
+            print("Retrieved Document:", document.page_content)
+
     return rag_tool
 
 rag_tool = create_rag_tool()
@@ -131,7 +142,7 @@ rag_agent = AssistantAgent(
     tools=[rag_tool],
     model_client=model_client,
     description="An agent that uses RAG to retrieve and generate information based on a given query",
-    system_message="You are a helpful AI assistant. Use the RAG tool to retrieve additional information from local files. Then immediately create your response and append to your response the word 'TERMINATE'",
+    system_message="Create an answer to the query from the text provided from the vector store. Then immediately create your response and append to your response the word 'TERMINATE'",
     #system_message="For testing purposes please ALWAYS only answer with the word 'TERMINATE'"
 )
 

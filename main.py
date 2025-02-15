@@ -18,6 +18,8 @@ from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_core.tools import FunctionTool
 
+llm_model_name = 'mistral'
+
 # Custom LLM client for Ollama
 class OllamaLLM(LLM, BaseModel):
     model_name: str
@@ -88,7 +90,7 @@ def create_rag_tool():
     vector_store = FAISS.load_local("./faiss.index", embeddings=get_embeddings, allow_dangerous_deserialization=True)
 
     # Create a custom LLM client for Ollama
-    llm = OllamaLLM(model_name='mistral')
+    llm = OllamaLLM(model_name=llm_model_name)
 
     # Create a RetrievalQA chain
     rag_chain = RetrievalQA.from_chain_type(
@@ -108,7 +110,7 @@ def create_rag_tool():
 rag_tool = create_rag_tool()
 
 model_client = OpenAIChatCompletionClient(
-    model = "mistral",
+    model = llm_model_name,
     base_url="http://localhost:11434/v1",
     api_key="placeholder",
     model_info={
